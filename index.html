@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<head>
+    <title> Tic- Tac- Toe</title>
+    <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+    <header>
+        <h1> Tic-Tac-Toe </h1>
+        <h2 id = "turnText">Select Options and Click Create to make a new game.</h2>
+        <form>
+            <label> GameType</label>
+            <select name = "gametype" id = "gametype">
+                <option value = "twoPlayer"> Two Players</option>
+                <option value = "whiteComp"> Play First</option>
+                <option value = "blackComp"> Play Second </option>
+            </select>
+            <label> Number of Rows : </label>
+            <select name = "numRows" id = "numRows"></select>
+            <label> Number of Columns : </label>
+            <select name = "numColumns" id = "numColumns"></select>
+            <label> Number in a row needed to win:</label>
+            <select name = "winLength" id = "winLength"></select>
+            <label>Board Style: </label>
+            <select name = "styles" id = "styles">
+                <option value = "go">Go Board</option>
+                <option value = "x">Tic-Tac-Toe</option>
+            </select>
+            <br>
+            <label>First player name: </label>
+            <input type = "text" id = "firstPlayer" name = "firstPlayer">
+            <label> Second player name:</label>
+            <input type = "text" id = "secondPlayer" name = "secondPlayer">
+            <label>Shuffle turn order</label>
+            <input type = "checkbox" name = "shuffle" id = "shuffle">
+            <input type = "button" id = "submit" value = "Create New Game">
+        </form>
+        
+
+    </header>
+    <main>
+        <table cellspacing = 0></table>
+        <template id = "cross">
+            <div>
+                <div class = "half">
+                    <div class = "fourth borderBottom"></div>
+                    <div class = "fourth borderLeft borderBottom"></div>
+                </div>
+                <div class = "half">
+                    <div class = "fourth"></div>
+                    <div class = "fourth borderLeft"></div>
+                </div>
+            </div>
+        </template>
+    </main>
+    <script type="text/javascript" src="/app.js"></script>
+</body>
+</html>

@@ -21,9 +21,13 @@ class Board{
             this.blackName = name1;
             this.whiteName = "Computer"
         }
-        else{
+        else if(mode == "twoPlayer"){
             this.blackName = name1;
             this.whiteName = name2;
+        }
+        else{
+            this.blackName = name1 + " Computer";
+            this.whiteName = name2 + " Computer";
         }
         this.totalTurns = numRows * numCols;
         this.turnNumber = 1;
@@ -305,7 +309,7 @@ function makeTableChecker(numRows, numColumns)
 function cellClicked(event)
 {
     if(board.gameOver) return;
-    if(board.mode == board.turn + "Comp") return;
+    if(board.mode == board.turn + "Comp" || board.mode == "allComp") return;
     let cell;
     if(board.style == "go")
         cell  = event.target.parentNode.parentNode.parentNode;
@@ -357,7 +361,7 @@ function checkLengths(board, color, length, minOpen = 0)
     for(key in lines)
     {
         let open = 0;
-        if(lines[key].length == length)
+        if(lines[key].length >= length)
         {
             if(getOpenings(board, lines[key], color).length >= minOpen)
                 threshold.push(lines[key]);
@@ -391,7 +395,7 @@ function startTurn()
 {
     if(board.gameOver) return;
     turnText.innerText = `${board[board.turn + "Name"]}'s turn`
-    if(board.mode == board.turn + "Comp")
+    if(board.mode == board.turn + "Comp" || board.mode == "allComp")
         window.setTimeout(computerTurn, 1000);
 }
 
@@ -422,7 +426,7 @@ function addX(cell)
     }
 }
 
-function getAllUnoccupied()
+function getAllUnoccupied(board)
 {
     let Unoccupied = [];
     for(let i = 0; i < board.numRows; i++)
@@ -439,17 +443,17 @@ function getAllUnoccupied()
 
 function getRandomUnoccupied()
 {
-    const Unoccupied = getAllUnoccupied();
+    const Unoccupied = getAllUnoccupied(board);
     const index = Math.floor(Math.random() * Unoccupied.length);
     return Unoccupied[index];
 }
 
-function getWinningMoves(color, num, minOpens = 0)
+function getWinningMoves(board, color, num, minOpens = 0)
 {
     copy = JSON.parse(JSON.stringify(board));
     copy.style = "none";
     copy.turn = color;
-    const Unoccupied = getAllUnoccupied();
+    const Unoccupied = getAllUnoccupied(board);
     let winningMoves = [];
     for(let i = 0; i < Unoccupied.length; i++)
     {
@@ -469,19 +473,78 @@ function getWinningMoves(color, num, minOpens = 0)
 
 }
 
-function getMaxSpace(winningMoves)
+
+
+function getMaxSpace(array, num, space)
 {
-    let maxSpace = winningMoves[0].space;
-    let maxNum = winningMoves[0].winNum;
-    for(let i = 1; i < winningMoves.length; i++)
+    let maxSpace = array[0];
+    let maxNum = array[0][num];
+    for(let i = 1; i < array.length; i++)
     {
-        if(winningMoves[i].winNum > maxNum)
+        if(array[i][num] > maxNum)
         {
-            maxSpace = winningMoves[i].space;
-            maxNum = winningMoves[i].winNum;
+            maxSpace = array[i];
+            maxNum = array[i][num];
         }
     }
     return maxSpace;
+}
+
+function getWinsInTwoTurns(color)
+{
+    const Unoccupied = getAllUnoccupied(board);
+    copy2 = JSON.parse(JSON.stringify(board));
+    copy2.style = "none";
+    copy2.turn = color;
+    let firstMoves = [];
+    for(let i = 0; i < Unoccupied.length; i++)
+    {
+       const previous = JSON.parse(JSON.stringify(copy2));
+       copy2 = addPiece(copy2, Unoccupied[i].cell, Unoccupied[i].row, Unoccupied[i].column);
+       const winningMoves = getWinningMoves(copy2, color, board.winLength);
+       firstMoves.push({length : winningMoves.length, move: Unoccupied[i]});
+       copy2 = JSON.parse(JSON.stringify(previous));
+    }
+    return firstMoves;
+}
+
+function getConnections(row, column, color)
+{
+    let connections = 0;
+
+    let up = checkSpace(board, row - 1, column, color);
+    let down = checkSpace(board, row + 1, column, color);
+    let left = checkSpace(board, row, column - 1, color);
+    let right = checkSpace(board, row, column + 1, color);
+    let posLeft = checkSpace(board, row + 1, column - 1, color); 
+    let posRight = checkSpace(board, row - 1, column + 1, color);
+    let negLeft = checkSpace(board, row -1, column - 1, color);
+    let negRight = checkSpace(board, row + 1, column +1, color);
+
+    if(up.color == "same") connections++;
+    if(down.color == "same") connections++;
+    if(left.color == "same") connections++;
+    if(right.color == "same") connections++;
+    if(posLeft.color == "same") connections++;
+    if(posRight.color == "same") connections++;
+    if(negLeft.color == "same") connections++;
+    if(negRight.color == "same") connections++;
+
+    return connections;
+}
+
+function getAllConnections(color)
+{
+    const Unoccupied = getAllUnoccupied(board);
+    let allConnections = [];
+    for(let i = 0; i < Unoccupied.length; i++)
+    {
+        const numConnect = getConnections(Unoccupied[i].row, Unoccupied[i].column, color);
+        allConnections.push({num: numConnect, space: Unoccupied[i]});
+    }
+    return allConnections;
+
+
 }
 
 
@@ -493,25 +556,55 @@ function computerTurn()
     let other;
     if(board.turn == "black") other = "white";
     else other = "black";
-    const winningMoves = getWinningMoves(board.turn, winLength);
-    const otherWinningMoves = getWinningMoves(other, winLength);
+    const winningMoves = getWinningMoves(board, board.turn, winLength);
+    const otherWinningMoves = getWinningMoves(board, other, winLength);
     if(winningMoves.length != 0)
     {
         place = winningMoves[0].space;
     }
     else if(otherWinningMoves != 0)
     {
-        place = getMaxSpace(otherWinningMoves);
+        place = getMaxSpace(otherWinningMoves, "winNum", "space").space;
     }
     else
     {
-        const otherWinningMoves2 = getWinningMoves(other, winLength -1, 2);
+        const otherWinningMoves2 = getWinningMoves(board, other, winLength -1, 2);
         if(otherWinningMoves2.length > 1)
         {
-            place = getMaxSpace(otherWinningMoves2);
+            place = getMaxSpace(otherWinningMoves2, "winNum", "space").space;
+        }
+        else{
+            let win2 = getWinsInTwoTurns(board.turn);
+            let max = getMaxSpace(win2, "length", "move");
+            if(max.length != 0)
+            {
+                place = max.move;
+            }
+            else{
+                const myConnections = getAllConnections(board.turn);
+                const maxCon = getMaxSpace(myConnections, "num", "space");
+                if(maxCon.num != 0)
+                {
+                    place = maxCon.space;
+                }
+                else{
+                    const otherConnections = getAllConnections(other);
+                    const maxCon2 = getMaxSpace(otherConnections, "num", "space");
+                    if(maxCon2.num != 0)
+                    {
+                        place = maxCon2.space;
+                    }
+                }
+            }
+            
         }
     }
-    if(place == undefined) place = getRandomUnoccupied();
+    if(place == undefined) 
+    {
+        const Unoccupied = getAllUnoccupied(board);
+        const index  = Math.floor(Unoccupied.length / 2);
+        place = Unoccupied[index];
+    }
     addPiece(board, place.cell, place.row, place.column);
 
 }
@@ -565,6 +658,7 @@ table.addEventListener('click', cellClicked);
 
 let board;
 let copy;
+let copy2;
 makeSelect("numRows");
 makeSelect("numColumns");
 makeSelect("winLength");

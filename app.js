@@ -575,7 +575,14 @@ function computerTurn()
     else other = "black";
     const winningMoves = getWinningMoves(board, board.turn, winLength);
     const otherWinningMoves = getWinningMoves(board, other, winLength);
-    if(winningMoves.length != 0)
+    if(board.turnNumber == 1)
+    {
+        const rowt = Math.floor(board.numRows / 2);
+        const columnt = Math.floor(board.numCols / 2);
+        const cellt = table.children[rowt].children[columnt];
+        place = {row : rowt, column : columnt, cell : cellt};
+    }
+    else if(winningMoves.length != 0)
     {
         place = winningMoves[0].space;
     }
@@ -622,9 +629,7 @@ function computerTurn()
     }
     if(place == undefined) 
     {
-        const Unoccupied = getAllUnoccupied(board);
-        const index  = Math.floor(Unoccupied.length / 2);
-        place = Unoccupied[index];
+        place = getRandomUnoccupied();
     }
     addPiece(board, place.cell, place.row, place.column);
 

@@ -448,24 +448,27 @@ function getRandomUnoccupied()
     return Unoccupied[index];
 }
 
-function getWinningMoves(board, color, num, minOpens = 0)
+function getWinningMoves(board, color, num, minOpens = 0, startRow = 0, startColumn =0)
 {
     copy = JSON.parse(JSON.stringify(board));
     copy.style = "none";
     copy.turn = color;
-    const Unoccupied = getAllUnoccupied(board);
     let winningMoves = [];
-    for(let i = 0; i < Unoccupied.length; i++)
+    for(let i = startRow; i < board.numRows; i++)
     {
-        const previous = JSON.parse(JSON.stringify(copy));
-        copy = addPiece(copy, Unoccupied[i].cell, Unoccupied[i].row, Unoccupied[i].column);
-        let check = checkLengths(copy, color, num, minOpens);
-        if(check != 0)
+        for(let j = startColumn; j < board.numCols; j++)
         {
-            winningMoves.push({space : Unoccupied[i], winNum: check.length});
+            if(board.checker[i][j].occupied) continue;
+            const previous = JSON.parse(JSON.stringify(copy));
+            let cellt = table.children[i].children[j];
+            copy = addPiece(copy, cellt, i, j);
+            let check = checkLengths(copy, color, num, minOpens);
+            if(check != 0)
+            {
+                winningMoves.push({space : {row: i, column: j, cell: cellt}, winNum: check.length});
+            }
+            copy = JSON.parse(JSON.stringify(previous));
         }
-
-        copy = JSON.parse(JSON.stringify(previous));
     }
     return winningMoves;
     
@@ -477,33 +480,42 @@ function getWinningMoves(board, color, num, minOpens = 0)
 
 function getMaxSpace(array, num, space)
 {
-    let maxSpace = array[0];
+    let maxSpaces = [array[0]];
     let maxNum = array[0][num];
     for(let i = 1; i < array.length; i++)
     {
         if(array[i][num] > maxNum)
         {
-            maxSpace = array[i];
+            maxSpaces = [array[i]];
             maxNum = array[i][num];
         }
+        else if(array[i][num] == maxNum)
+        {
+            maxSpaces.push(array[i]);
+        }
     }
-    return maxSpace;
+    const index = Math.floor(Math.random() * maxSpaces.length);
+    return maxSpaces[index];
 }
 
 function getWinsInTwoTurns(color)
 {
-    const Unoccupied = getAllUnoccupied(board);
     copy2 = JSON.parse(JSON.stringify(board));
     copy2.style = "none";
     copy2.turn = color;
     let firstMoves = [];
-    for(let i = 0; i < Unoccupied.length; i++)
+    for(let i = 0; i < board.numRows; i++)
     {
-       const previous = JSON.parse(JSON.stringify(copy2));
-       copy2 = addPiece(copy2, Unoccupied[i].cell, Unoccupied[i].row, Unoccupied[i].column);
-       const winningMoves = getWinningMoves(copy2, color, board.winLength);
-       firstMoves.push({length : winningMoves.length, move: Unoccupied[i]});
-       copy2 = JSON.parse(JSON.stringify(previous));
+        for(let j = 0; j < board.numCols; j++)
+        {
+            if(board.checker[i][j].occupied) continue;
+            const previous = JSON.parse(JSON.stringify(copy2));
+            let cellt = table.children[i].children[j];
+            copy2 = addPiece(copy2, cellt, i, j);
+            const winningMoves = getWinningMoves(copy2, color, board.winLength, 0, i, j);
+            firstMoves.push({length : winningMoves.length, move: {row: i, column: j, cell: cellt}});
+            copy2 = JSON.parse(JSON.stringify(previous));
+        }
     }
     return firstMoves;
 }
@@ -535,13 +547,18 @@ function getConnections(row, column, color)
 
 function getAllConnections(color)
 {
-    const Unoccupied = getAllUnoccupied(board);
     let allConnections = [];
-    for(let i = 0; i < Unoccupied.length; i++)
+    for(let  i = 0; i < board.numRows; i++)
     {
-        const numConnect = getConnections(Unoccupied[i].row, Unoccupied[i].column, color);
-        allConnections.push({num: numConnect, space: Unoccupied[i]});
+        for(let j = 0; j < board.numCols; j++)
+        {
+            if(board.checker[i][j].occupied) continue;
+            const numConnect = getConnections(i, j, color);
+            const cellt = table.children[i].children[j];
+            allConnections.push({num: numConnect, space: {row: i, column: j, cell: cellt}});
+        }
     }
+    
     return allConnections;
 
 
@@ -569,7 +586,12 @@ function computerTurn()
     else
     {
         const otherWinningMoves2 = getWinningMoves(board, other, winLength -1, 2);
-        if(otherWinningMoves2.length > 1)
+        const winningMoves2 = getWinningMoves(board, board.turn,winLength -1, 2);
+        if(winningMoves2.length > 1)
+        {
+            place = getMaxSpace(winningMoves2, "winNum", "space").space;
+        }
+        else if(otherWinningMoves2.length > 1)
         {
             place = getMaxSpace(otherWinningMoves2, "winNum", "space").space;
         }
@@ -596,7 +618,6 @@ function computerTurn()
                     }
                 }
             }
-            
         }
     }
     if(place == undefined) 

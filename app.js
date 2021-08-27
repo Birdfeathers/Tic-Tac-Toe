@@ -225,7 +225,7 @@ function addCross(cell, rowNum, colNum)
     let crossTemp = temp.content.cloneNode(true);
     cell.appendChild(crossTemp);
     let cross = cell.children[0];
-    cross.classList.add("full", "orange");
+    cross.classList.add("full");
     if(rowNum == 0)
     {
         let top = cross.children[0].children[1];
@@ -273,6 +273,15 @@ table.appendChild(trow);
 
 function makeTable(numRows, numColumns)
 {
+    if(board.style == "go") {
+        table.classList.remove("paper");
+        table.classList.add("wood");
+    }
+    else
+    {
+        table.classList.remove("wood");
+        table.classList.add("paper");
+    }
     for(let i = 0; i < numRows; i++)
     {
         makeRow(numColumns, i);
@@ -403,7 +412,7 @@ function startTurn()
 function addCircle(cell)
 {
     let circle = document.createElement("div");
-    circle.classList.add("circle", "full", "top");
+    circle.classList.add("circle", "full", "top", "shine");
     circle.classList.add(board.turn);
     cell.appendChild(circle);
 }

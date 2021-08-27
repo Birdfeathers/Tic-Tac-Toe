@@ -1,13 +1,32 @@
 
+body{
+    background-color: linen;
+}
 
+form{
+    /* background-color: darkred; */
+    border: 1px solid black;
+    padding: 5px;
+    box-shadow: 1px 2px gray;
+    background-color: white;
+}
 
+h1, h2{
+    text-align: center;
+}
 
+main{
+    display:flex;
+    justify-content: center;
+    padding: 5vh;
+    margin: 1vh;
+    background-image: url(/images/green.jpg);
+}
 
 td {
     width: 50px;
     height: 50px;
     position:relative;
-    /* display:inline-block; */
   
 
   }
@@ -29,12 +48,20 @@ td {
   }
 
   .white{
-      background-color: white;
+      background-color: azure;
   }
 
-  .orange{
-      background-color: sandybrown;
+  .wood{
+      /* background-color: sandybrown; */
+      background-image: url('/images/wood.jpg');
+      box-shadow: 5px 10px 10px black;
   }
+
+.paper{
+    background-image: url('/images/paper.jpg');
+    padding: 5px;
+    box-shadow: 2px 4px black;
+}
 
   .fourth{
       width: 50%;
@@ -43,18 +70,19 @@ td {
   }
 
   .border{
-    border: 1px solid black;
+    border: 2px solid black;
   }
 
 
   .borderLeft{
-      border-left: 1px solid black;;
+      border-left: 2px solid black;;
   }
  
 
   .borderBottom{
-      border-bottom: 1px solid black;
+      border-bottom: 2px solid black;
   }
+  
 
   .flex{
       display: flex;
@@ -86,4 +114,9 @@ td {
       height: 80%;
       width: 80%;
       margin: 0 auto;
+  }
+
+  .shine{
+      box-shadow: 1px 2px darkgray;
+      /* box-shadow: inset -1px -1px white; */
   }

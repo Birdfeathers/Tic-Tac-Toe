@@ -72,18 +72,6 @@ function adjustNums(board, line, linetype , num)
     for(i = 0; i < line.length; i++)
     {
         board.checker[currentRow][currentColumn].stone[linetype] = num;
-        // if(linetype != "vertical")
-        // {
-        //     currentColumn++;
-        // }
-        // if(linetype == "vertical" || linetype =="negative")
-        // {
-        //     currentRow++;
-        // }
-        // if(linetype == "positive")
-        // {
-        //     currentRow--;
-        // }
         let position = iterateLine(linetype, currentRow, currentColumn);
         currentRow = position.row;
         currentColumn = position.column;
@@ -382,9 +370,11 @@ function checkLengths(board, color, length, minOpen = 0)
 
 function endTurn()
 {
-    if(checkLengths(board, board.turn, board.winLength).length > 0)
+    const winningLines = checkLengths(board, board.turn, board.winLength);
+    if(winningLines.length > 0)
     {
         turnText.innerText = `Game over, ${board[board.turn + "Name"]} wins! Click Create New Game to play again.`;
+        addWinLines(winningLines);
         board.gameOver = true;
         return;
     }
@@ -434,6 +424,40 @@ function addX(cell)
         cell.appendChild(circle);
     }
 }
+
+function addWinLines(winLines)
+{
+    for(let i = 0; i < winLines.length; i++)
+    {
+        const line = winLines[i];
+        let row = line.start.row;
+        let column = line.start.column;
+        for(let j = 0; j < line.length; j++)
+        {
+            const currentCell = table.children[row].children[column];
+            if(board.style == "x")
+            {
+                const temp = document.getElementById("line");
+                let lineTemp = temp.content.cloneNode(true);
+                currentCell.appendChild(lineTemp);
+                let obj = currentCell.children[1];
+                obj.classList.add("top", "full");
+                if(line.type == "vertical") obj.classList.add("rotate90")
+                if(line.type == "positive") obj.classList.add("rotate135", "bigger", "positive");
+                if(line.type == "negative") obj.classList.add("rotate45", "bigger", "negative");
+            }
+            else{
+                let stone = currentCell.children[1];
+                stone.classList.add("winBorder");
+            }
+            const position = iterateLine(line.type, row, column);
+            row = position.row;
+            column = position.column;
+        }
+    }
+   
+}
+
 
 function getAllUnoccupied(board)
 {

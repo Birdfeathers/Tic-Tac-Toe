@@ -21,6 +21,8 @@ main{
     padding: 5vh;
     margin: 1vh;
     background-image: url(/images/green.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
 }
 
 td {
@@ -55,12 +57,16 @@ td {
       /* background-color: sandybrown; */
       background-image: url('/images/wood.jpg');
       box-shadow: 5px 10px 10px black;
+      background-repeat: no-repeat;
+      background-size: cover;
   }
 
 .paper{
     background-image: url('/images/paper.jpg');
     padding: 5px;
     box-shadow: 2px 4px black;
+    background-repeat: no-repeat;
+    background-size: cover;
 }
 
   .fourth{
@@ -110,13 +116,53 @@ td {
       transform: rotate(45deg);
   }
 
+  .rotate90{
+    transform: rotate(90deg);
+  }
+
+  .rotate135{
+    transform: rotate(135deg);
+  }
+
   .most{
       height: 80%;
       width: 80%;
       margin: 0 auto;
   }
+  
+  .redBorder{
+      border-color: red;
+  }
+
+  .bigger{
+      height: 150%;
+      width: 150%;
+      position: absolute;
+  }
+
+  .positive{
+    margin: 0 40%;
+    top: 20%;
+    left: -12%;
+    right: 40%;
+  }
+
+  .negative{
+    margin: 0% 20%;
+    bottom: 20%;
+    top: -80%;
+    left: 12%;
+    right: -40%;
+  }
 
   .shine{
       box-shadow: 1px 2px darkgray;
       /* box-shadow: inset -1px -1px white; */
+  }
+
+  .winBorder{
+      border: 3px solid gold;
+      height: 95%;
+      width:95%;
+      z-index: 15;
   }

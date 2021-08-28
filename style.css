@@ -1,10 +1,8 @@
-
 body{
     background-color: linen;
 }
 
 form{
-    /* background-color: darkred; */
     border: 1px solid black;
     padding: 5px;
     box-shadow: 1px 2px gray;
@@ -15,9 +13,21 @@ h1, h2{
     text-align: center;
 }
 
+#player1p, #player2p{
+    width: 4.5vh;
+    height: 4.5vh;
+    margin: 4.5vh;
+    position: relative;
+    display: flex;
+    align-items: center;
+ 
+}
+
+
 main{
     display:flex;
     justify-content: center;
+    align-items: center;
     padding: 5vh;
     margin: 1vh;
     background-image: url(/images/green.jpg);
@@ -26,8 +36,8 @@ main{
 }
 
 td {
-    width: 50px;
-    height: 50px;
+    width: 4.5vh;
+    height: 4.5vh;
     position:relative;
   
 
@@ -101,10 +111,7 @@ td {
       z-index: 10;
   }
 
-  .display{
-      height: 100px;
-      width: 100px;
-  }
+  
 
   .half{
       height: 50%;
@@ -138,21 +145,8 @@ td {
       height: 150%;
       width: 150%;
       position: absolute;
-  }
-
-  .positive{
-    margin: 0 40%;
-    top: 20%;
-    left: -12%;
-    right: 40%;
-  }
-
-  .negative{
-    margin: 0% 20%;
-    bottom: 20%;
-    top: -80%;
-    left: 12%;
-    right: -40%;
+      top: -25%;
+      left:-25%;
   }
 
   .shine{
@@ -162,7 +156,28 @@ td {
 
   .winBorder{
       border: 3px solid gold;
+      width: 95%;
       height: 95%;
-      width:95%;
       z-index: 15;
+  }
+
+  .blackBorder{
+      border: 3px solid black !important;
+     
+  }
+
+  .whiteBorder{
+    border: 3px solid linen !important;
+   
+}
+
+  .transparentBorder{
+    border: 3px solid transparent;
+  }
+
+  @media screen and (max-width: 768px)
+  {
+      form{
+          font-size: x-large;
+      }
   }

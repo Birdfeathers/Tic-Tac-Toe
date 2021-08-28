@@ -14,7 +14,7 @@ class Board{
         if(mode == "blackComp")
         {
             this.blackName = "Computer";
-            this.whiteName = name1;
+            this.whiteName = name2;
         }
         else if(mode == "whiteComp")
         {
@@ -26,8 +26,8 @@ class Board{
             this.whiteName = name2;
         }
         else{
-            this.blackName = name1 + " Computer";
-            this.whiteName = name2 + " Computer";
+            this.blackName = name1 + "[Computer]";
+            this.whiteName = name2 + "[Computer]";
         }
         this.totalTurns = numRows * numCols;
         this.turnNumber = 1;
@@ -247,8 +247,7 @@ function addEdges(cell, rowNum, colNum)
 
 
 function makeRow(numColumns, rowNum){
-    const trow = document.createElement("tr");
-   
+   const trow = document.createElement("tr");
    for (let i = 0; i < numColumns; i++){
     const tcell = document.createElement("td");
     if(board.style == "go") addCross(tcell, rowNum, i);
@@ -275,6 +274,7 @@ function makeTable(numRows, numColumns)
         makeRow(numColumns, i);
     }
 }
+
 function makeSelect(id)
 {
     for(let i = 3; i < 16; i++)
@@ -326,8 +326,8 @@ function cellClicked(event)
 }
 function addPiece(board, cell, rowNum, colNum)
 {
-        if(board.style == "go")addCircle(cell);
-        else if(board.style == "x")addX(cell);
+        if(board.style == "go")addCircle(cell, board.turn);
+        else if(board.style == "x")addX(cell, board.turn);
         board.checker[rowNum][colNum].occupied = true;
         board.checker[rowNum][colNum].color = board.turn;
         let piece = new stone(board, rowNum, colNum, board.turn);
@@ -371,6 +371,9 @@ function checkLengths(board, color, length, minOpen = 0)
 function endTurn()
 {
     const winningLines = checkLengths(board, board.turn, board.winLength);
+    piece1.classList.remove("blackBorder");
+    piece2.classList.remove("blackBorder");
+    piece1.classList.remove("whiteBorder");
     if(winningLines.length > 0)
     {
         turnText.innerText = `Game over, ${board[board.turn + "Name"]} wins! Click Create New Game to play again.`;
@@ -394,22 +397,41 @@ function startTurn()
 {
     if(board.gameOver) return;
     turnText.innerText = `${board[board.turn + "Name"]}'s turn`
+    piece1 = document.getElementById("player1p");
+    piece2 = document.getElementById("player2p");
+    if(board.style == "go")
+    {
+        piece1 = piece1.children[0];
+        piece2 = piece2.children[0];
+    }
+    if(board.turn == "black")
+    {
+        piece2.classList.remove("blackBorder");
+        if(board.style == "go") piece1.classList.add("whiteBorder");
+        else piece1.classList.add("blackBorder");
+    }
+    else
+    {
+        piece1.classList.remove("blackBorder");
+        piece1.classList.remove("whiteBorder");
+        piece2.classList.add("blackBorder");
+    }
     if(board.mode == board.turn + "Comp" || board.mode == "allComp")
         window.setTimeout(computerTurn, 1000);
 }
 
 
-function addCircle(cell)
+function addCircle(cell, color)
 {
     let circle = document.createElement("div");
     circle.classList.add("circle", "full", "top", "shine");
-    circle.classList.add(board.turn);
+    circle.classList.add(color);
     cell.appendChild(circle);
 }
 
-function addX(cell)
+function addX(cell, color)
 {
-    if(board.turn == "black")
+    if(color == "black")
     {
         const temp = document.getElementById("cross");
         let crossTemp = temp.content.cloneNode(true);
@@ -440,11 +462,11 @@ function addWinLines(winLines)
                 const temp = document.getElementById("line");
                 let lineTemp = temp.content.cloneNode(true);
                 currentCell.appendChild(lineTemp);
-                let obj = currentCell.children[1];
+                let obj = currentCell.children[currentCell.childElementCount -1];
                 obj.classList.add("top", "full");
                 if(line.type == "vertical") obj.classList.add("rotate90")
-                if(line.type == "positive") obj.classList.add("rotate135", "bigger", "positive");
-                if(line.type == "negative") obj.classList.add("rotate45", "bigger", "negative");
+                if(line.type == "positive") obj.classList.add("rotate135", "bigger");
+                if(line.type == "negative") obj.classList.add("rotate45", "bigger");
             }
             else{
                 let stone = currentCell.children[1];
@@ -674,8 +696,37 @@ function deleteTable()
     {
         table.children[0].remove();
     }
+    piece1 = document.getElementById("player1p");
+    piece2 = document.getElementById("player2p");
+    piece1.classList.remove("blackBorder");
+    piece2.classList.remove("blackBorder");
+    piece1.classList.remove("whiteBorder");
+    while(piece1.children.length != 0)
+    {
+        piece1.children[0].remove();
+        piece2.children[0].remove();
+    }
 }
 
+function makePiece()
+{
+    let p1 = document.getElementById("player1p");
+    let p2 = document.getElementById("player2p");
+    if(board.style == "go")
+    {
+        p1.classList.remove("white");
+        p2.classList.remove("white");
+        addCircle(p1, "black");
+        addCircle(piece2, "white");
+    }
+    else{
+        p1.classList.add("white");
+        p2.classList.add("white");
+        addX(p1, "black");
+        addX(p2, "white");
+
+    }
+}
 
 
 function CreateGame()
@@ -692,8 +743,8 @@ function CreateGame()
         alert("Cannot make game with win Length greater than rows or columns.");
         return;
     } 
-    if(name1 == "" || name1 == undefined) name1 = "Player one";
-    if(name2 == "" || name2 == undefined) name2 = "Player two";
+    if(name1 == "" || name1 == undefined) name1 = "Player One";
+    if(name2 == "" || name2 == undefined) name2 = "Player Two";
     if(shuffle && Math.floor(Math.random() * 2))
     {
         if(mode == "whiteComp") mode = "blackComp";
@@ -707,8 +758,8 @@ function CreateGame()
     deleteTable();
     board = new Board(rows, columns, winLength, mode, name1, name2, style);
     makeTable(rows,columns);
+    makePiece();
     startTurn();
-
 
 }
 
@@ -718,6 +769,8 @@ table.addEventListener('click', cellClicked);
 let board;
 let copy;
 let copy2;
+let piece1;
+let piece2;
 makeSelect("numRows");
 makeSelect("numColumns");
 makeSelect("winLength");

@@ -6,7 +6,7 @@
 <body>
     <header>
         <h1> Tic-Tac-Toe </h1>
-        <h2 id = "turnText">Select Options and Click Create to make a new game.</h2>
+        <h2 id = "turnText">Select options and click create to make a new game.</h2>
         <form>
             <label> GameType</label>
             <select name = "gametype" id = "gametype">
@@ -39,7 +39,9 @@
 
     </header>
     <main>
+        <div id = "player1p" class = "transparentBorder"></div>
         <table cellspacing = 0></table>
+        <div id = "player2p" class = "transparentBorder"></div>
         <template id = "cross">
             <div>
                 <div class = "half">
@@ -53,8 +55,10 @@
             </div>
         </template>
         <template id = "line">
-            <div class = "half borderBottom redBorder"></div>
-            <div class = "half"></div>
+            <div>
+                <div class = "half borderBottom redBorder"></div>
+                <div class = "half"></div>
+            </div>
         </template>
     </main>
     <script type="text/javascript" src="/app.js"></script>

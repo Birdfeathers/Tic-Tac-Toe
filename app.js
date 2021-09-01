@@ -747,8 +747,17 @@ function CreateGame()
     if(name2 == "" || name2 == undefined) name2 = "Player Two";
     if(shuffle && Math.floor(Math.random() * 2))
     {
-        if(mode == "whiteComp") mode = "blackComp";
-        else if(mode == "blackComp") mode = "whiteComp";
+        if(mode == "whiteComp")
+        {
+            mode = "blackComp";
+            name2 = name1;
+
+        }
+        else if(mode == "blackComp") 
+        {
+            mode = "whiteComp";
+            name1 = name2;
+        }
         else{
             const temp = name1;
             name1 = name2;
